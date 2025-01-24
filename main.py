@@ -45,6 +45,33 @@ Layout = None
 # Function to update the second select input based on the first selection
 def update_values(selected):
     global Course, Layout
+    try:
+        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
+                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
+                   '/export?gid=0&format=csv',
+                   # Set first column as rownames in data frame
+                   index_col=0
+                  )
+    except:
+        None
+    data = data.reset_index().values.tolist()
+
+    courses = []
+    for round in data:
+        if round[1] not in courses:
+            courses += [round[1]]
+
+    course_layouts = {"All":"-"}
+
+    for course in courses:
+        layouts = []
+        for round in data:
+            if round[1] == course:
+                 if round[2] not in layouts:
+                    layouts += [round[2]]
+        if len(layouts)>1:
+            layouts = ["All"] + layouts
+        course_layouts[course] = layouts
     if selected is not None:
         # If "All" is selected, the layout dropdown will only have "-"
         if selected == "All":
@@ -64,6 +91,33 @@ def update_values(selected):
 # Function to update the selected layout value
 def update_selected_value(event):
     global Layout
+    try:
+        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
+                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
+                   '/export?gid=0&format=csv',
+                   # Set first column as rownames in data frame
+                   index_col=0
+                  )
+    except:
+        None
+    data = data.reset_index().values.tolist()
+
+    courses = []
+    for round in data:
+        if round[1] not in courses:
+            courses += [round[1]]
+
+    course_layouts = {"All":"-"}
+
+    for course in courses:
+        layouts = []
+        for round in data:
+            if round[1] == course:
+                 if round[2] not in layouts:
+                    layouts += [round[2]]
+        if len(layouts)>1:
+            layouts = ["All"] + layouts
+        course_layouts[course] = layouts
     if event.value is not None:
         Layout = event.value
         rest(Course, Layout)  # Call the rest function whenever selection changes
@@ -363,12 +417,66 @@ def rest(Course, Layout):
 
 def course_dropdown():
     global Course
+    try:
+        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
+                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
+                   '/export?gid=0&format=csv',
+                   # Set first column as rownames in data frame
+                   index_col=0
+                  )
+    except:
+        None
+    data = data.reset_index().values.tolist()
+
+    courses = []
+    for round in data:
+        if round[1] not in courses:
+            courses += [round[1]]
+
+    course_layouts = {"All":"-"}
+
+    for course in courses:
+        layouts = []
+        for round in data:
+            if round[1] == course:
+                 if round[2] not in layouts:
+                    layouts += [round[2]]
+        if len(layouts)>1:
+            layouts = ["All"] + layouts
+        course_layouts[course] = layouts
     dropdown = ui.select(options=["All"] + courses, value="All", label="Course", on_change=lambda e: update_values(e.value)).classes('min-w-40')
     return dropdown
 
 # Dropdown for selecting layout
 def layout_dropdown():
     global Layout
+    try:
+        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
+                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
+                   '/export?gid=0&format=csv',
+                   # Set first column as rownames in data frame
+                   index_col=0
+                  )
+    except:
+        None
+    data = data.reset_index().values.tolist()
+
+    courses = []
+    for round in data:
+        if round[1] not in courses:
+            courses += [round[1]]
+
+    course_layouts = {"All":"-"}
+
+    for course in courses:
+        layouts = []
+        for round in data:
+            if round[1] == course:
+                 if round[2] not in layouts:
+                    layouts += [round[2]]
+        if len(layouts)>1:
+            layouts = ["All"] + layouts
+        course_layouts[course] = layouts
     # Initialize with "-" as the only option, since the layout options will depend on the course selected
     dropdown = ui.select(options=["-"],value="-", label="Layout", on_change=lambda e: update_selected_value(e)).classes('min-w-40')
     return dropdown

@@ -4,6 +4,7 @@ from ipywidgets import interact, Dropdown
 from IPython.display import display, HTML
 import numpy as np
 import ssl
+import os
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -354,4 +355,5 @@ container = ui.column()
 update_values(course_select.value)
 update_selected_value(values_select)
 
-ui.run()
+port = int(os.getenv("PORT", 8080))  # Use PORT from environment or default to 8080
+ui.run(host='0.0.0.0', port=port)

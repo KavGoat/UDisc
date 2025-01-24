@@ -70,6 +70,33 @@ def update_selected_value(event):
 
 
 def rest(Course, Layout):
+    try:
+        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
+                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
+                   '/export?gid=0&format=csv',
+                   # Set first column as rownames in data frame
+                   index_col=0
+                  )
+    except:
+        None
+    data = data.reset_index().values.tolist()
+
+    courses = []
+    for round in data:
+        if round[1] not in courses:
+            courses += [round[1]]
+
+    course_layouts = {"All":"-"}
+
+    for course in courses:
+        layouts = []
+        for round in data:
+            if round[1] == course:
+                 if round[2] not in layouts:
+                    layouts += [round[2]]
+        if len(layouts)>1:
+            layouts = ["All"] + layouts
+        course_layouts[course] = layouts
     container.clear()
     dates = []
     for rounds in data:

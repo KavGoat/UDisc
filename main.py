@@ -44,7 +44,7 @@ Layout = None
 
 # Function to update the second select input based on the first selection
 def update_values(selected):
-    global Course, Layout
+    global Course, Layout, course_layouts
     if selected is not None:
         # If "All" is selected, the layout dropdown will only have "-"
         if selected == "All":
@@ -70,33 +70,8 @@ def update_selected_value(event):
 
 
 def rest(Course, Layout):
-    try:
-        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
-                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
-                   '/export?gid=0&format=csv',
-                   # Set first column as rownames in data frame
-                   index_col=0
-                  )
-    except:
-        None
-    data = data.reset_index().values.tolist()
-
-    courses = []
-    for round in data:
-        if round[1] not in courses:
-            courses += [round[1]]
-
-    course_layouts = {"All":"-"}
-
-    for course in courses:
-        layouts = []
-        for round in data:
-            if round[1] == course:
-                 if round[2] not in layouts:
-                    layouts += [round[2]]
-        if len(layouts)>1:
-            layouts = ["All"] + layouts
-        course_layouts[course] = layouts
+    global data
+    global course_layouts
     container.clear()
     dates = []
     for rounds in data:
@@ -363,6 +338,7 @@ def rest(Course, Layout):
 
 def course_dropdown():
     global Course
+    global courses
     dropdown = ui.select(options=["All"] + courses, value="All", label="Course", on_change=lambda e: update_values(e.value)).classes('min-w-40')
     return dropdown
 
@@ -372,11 +348,67 @@ def layout_dropdown():
     # Initialize with "-" as the only option, since the layout options will depend on the course selected
     dropdown = ui.select(options=["-"],value="-", label="Layout", on_change=lambda e: update_selected_value(e)).classes('min-w-40')
     return dropdown
+    
+def reload_data():
+    global course_layouts
+    global courses
+    global course_select
+    global value_select
+    global data
+    data = 0
+    try:
+        data = pd.read_csv('https://docs.google.com/spreadsheets/d/' + 
+                   '1M4VT4eXXPj5UL7Xn8s5B1yu_taULnGQ3jHKzmG14rIA' +
+                   '/export?gid=0&format=csv',
+                   # Set first column as rownames in data frame
+                   index_col=0
+                  )
+    except:
+        None
+
+    data = data.reset_index().values.tolist()
+
+    courses = []
+    for round in data:
+        if round[1] not in courses:
+            courses += [round[1]]
+    course_layouts.clear()
+
+    course_layouts = {"All":"-"}
+
+    for course in courses:
+        layouts = []
+        for round in data:
+            if round[1] == course:
+                if round[2] not in layouts:
+                    layouts += [round[2]]
+        if len(layouts)>1:
+            layouts = ["All"] + layouts
+        course_layouts[course] = layouts
+    course_select.options = ["All"] + courses
+    selected = course_select.value
+    if selected is not None:
+        # If "All" is selected, the layout dropdown will only have "-"
+        if selected == "All":
+            options = ["-"]
+        else:
+            print(1)
+            print(course_layouts.get(selected, []))
+            # Get the layouts for the selected course
+            options = course_layouts.get(selected, [])
+        
+        # Update the layout dropdown options
+        values_select.options = options
+    values_select.update()
+    course_select.update()
+    Course = course_select.value
+    Layout = values_select.value
+    rest(Course, Layout)
 
 # Display the dropdowns
 course_select = course_dropdown()
 values_select = layout_dropdown()
-
+ui.button('Reload', on_click=lambda: reload_data())
 container = ui.column()
 
 update_values(course_select.value)
